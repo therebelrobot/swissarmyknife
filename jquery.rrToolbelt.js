@@ -8,8 +8,6 @@ https://github.com/therebelrobot/jquery.rrToolbelt
 
 Dependencies:
 	jQuery - //cdnjs.cloudflare.com/ajax/libs/jquery/1.9.1/jquery.min.js
-	jquery.backGroundSize.js - - https://github.com/louisremi/jquery.backgroundSize.js
-	jquery.rrToolbelt.ua.xml - Normally included with this file
 
 Available functions:
 
@@ -51,27 +49,39 @@ var $_rootDir = 'js/';
 	};
 
 /*IE8 Fixes*/
-
-	/*bg size*/
-
-	/*opacity*/
-		/*.transparent_class {
-		  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)"; // ie8
-
-		  filter: alpha(opacity=50); // ie5-7
-
-		  -moz-opacity: 0.5; // netscape
-
-		  -khtml-opacity: 0.5; // safari 1.x
-
-		  opacity: 0.5; // everyone else
-		}*/
+var $_MSIE = {
+	fixAll:function(){
+		$_MSIE.bg();
+		$_MSIE.opacity();
+	},
+	bg:function(){
+		var device = $_device();
+		if ((device.browser == 'MSIE' && device.bv == '6') || (device.browser == 'MSIE' && device.bv == '7') || (device.browser == 'MSIE' && device.bv == '8')){
+			/*include rrt-lib/jquery.backgroundSize.js*/
+			$('head').append('<script type="text/javascript" src="'+$_rootDir+'"rrt-lib/jquery.backgroundSize.js"></script>').promise().done(function(){
+				/*find all elements with a background-image and background-size set*/
+					/*apply appropriate fix*/
+					/*fix 100% 100% sizes*/
+			});
+		}
+	},
+	opacity:function(){
+		var device = $_device();
+		if ((device.browser == 'MSIE' && device.bv == '6') || (device.browser == 'MSIE' && device.bv == '7') || (device.browser == 'MSIE' && device.bv == '8')){
+			/*include rrt-lib/ieOp.css*/
+			$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/ieOp.css" />').promise().done(function(){
+				/*find all elements with a css style opacity set*/
+					/*add the appropriate data-ieopacity attribute*/
+			});
+		}
+	}
+};
 
 /*device functions*/
 	function $_device(){
 			var profile = {
 				type: false, // phone, tablet, desktop
-				OS: false, // windows, mac, android, linux, iPad
+				OS: false, // windows, mac, android, linux, iPad, iPod, iPhone
 				OSv: false, // return version of above OS
 				standalone:false, // true if iPad standalone browser
 				browser: false, // MSIE, firefox, chrome, safari, opera, other
