@@ -2,6 +2,8 @@
 
 jquery.rrToolbelt.js
 
+https://github.com/therebelrobot/jquery.rrToolbelt
+
 - Global (and generic) functions for use anywhere in the js code
 
 Dependencies:
