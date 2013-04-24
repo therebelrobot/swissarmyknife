@@ -14,6 +14,8 @@ Available functions:
  Global Functions:
 	$_GET(p) - retrieves GET information from the URL, where p is the desired parameter
 
+	$_(log, user, type) - conditional console.log/error when url has ?debug=user or ?debug=all or ?debug=true
+
 	$_MSIE - runs MSIE specific fixes for various issues (bgSize, opacity, border-radius, etc.
 
 	$_device() - inspects userAgent, returns object profile of device in use.
@@ -55,12 +57,62 @@ var $_rootDir = 'js/';
 					}
 					return value;
 				}
+				return false;
 			}
+			return false;
 		};
 
+	/*Console Log*/
+		function $_(log, user, type){
+  		var which = $_GET('debug');
+  		if (which){
+  			/*ie fix*/
+				$_MSIE.console();
+				function logThis(logger, typer){
+					switch(typer){
+						case 'log':
+							console.log(logger);
+							break;
+						case 'error':
+							console.error(logger);
+							break;
+						case 'warn':
+							console.warn(logger);
+							break;
+						case 'info':
+							console.info(logger);
+							break;
+					};
+				}
+				if (user == 'error' || user == 'warn' || user == 'info' || user =='log'){
+					type = user;
+					user = false; /*if only a log and a type*/
+				}
+				if (!type || (type != 'error' || type != 'warn' || type != 'info' || type !='log')){
+					type = 'log'; /*if no type or type is wrong*/
+				}
+				if (!user){
+					logThis(log,type); /*return anytime a console log requested*/
+				}
+				else{
+					if (which == 'all'){
+						logThis(log,type); /*return anytime all console logs are requested*/
+					}
+					else if (which === user){
+						logThis(log,type); /*return anytime a console log requested for user*/
+					}
+					else{
+						/*
+							when console log requested, but not for this user, all logs, or anytime.
+							*/
+					};
+				}
+  		};
+		};
 	/*IE8 Fixes*/
 		var $_MSIE = {
 			fixAll:function(){
+				$_MSIE.console();
 				$_MSIE.bg();
 				$_MSIE.opacity();
 				$_MSIE.pie();
@@ -111,6 +163,18 @@ var $_rootDir = 'js/';
 					/*include rrt-lib/ieOp.css*/
 					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/pie.css" />');
 				}
+			},
+			console:function(){
+				if(!window.console) {
+					console = {
+						log: function(){},
+						error:function(){},
+						warn:function(){},
+						info:function(){},
+						debug:function(){},
+						clear:function(){}
+					};
+				};
 			}
 		};
 
