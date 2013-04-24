@@ -53,15 +53,30 @@ var $_MSIE = {
 	fixAll:function(){
 		$_MSIE.bg();
 		$_MSIE.opacity();
+		$_MSIE.pie();
 	},
 	bg:function(){
 		var device = $_device();
 		if ((device.browser == 'MSIE' && device.bv == '6') || (device.browser == 'MSIE' && device.bv == '7') || (device.browser == 'MSIE' && device.bv == '8')){
 			/*include rrt-lib/jquery.backgroundSize.js*/
 			$('head').append('<script type="text/javascript" src="'+$_rootDir+'"rrt-lib/jquery.backgroundSize.js"></script>').promise().done(function(){
-				/*find all elements with a background-image and background-size set*/
-					/*apply appropriate fix*/
-					/*fix 100% 100% sizes*/
+				$('*').each(function(){
+					if ($(this).css('background-image') != 'none' && $(this).css('background-size') != 'auto'){
+						if ($(this).css('background-size') == 'cover' || $(this).css('background-size') == 'contain'){
+							var b = $(this).css('background-size');
+							$(this).css({backgroundSize:b});
+						}
+						else if ($(this).css('background-size') == '100%'){
+							$(this).css({backgroundSize:'contain'});
+						}
+						else if ($(this).css('background-size') == '100% 100%'){
+							$(this).css({backgroundSize:'contain'});
+							var thisH = $(this).height();
+							var thisW = $(this).width();
+							$(this).find('div:first > img').css({'height':thisH, 'width':thisW});
+						}
+					};
+				});
 			});
 		}
 	},
@@ -70,9 +85,19 @@ var $_MSIE = {
 		if ((device.browser == 'MSIE' && device.bv == '6') || (device.browser == 'MSIE' && device.bv == '7') || (device.browser == 'MSIE' && device.bv == '8')){
 			/*include rrt-lib/ieOp.css*/
 			$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/ieOp.css" />').promise().done(function(){
-				/*find all elements with a css style opacity set*/
-					/*add the appropriate data-ieopacity attribute*/
+				$('*').each(function(){
+					if ($(this).css('opacity') != 'auto'){
+						$(this).attr('data-ieopacity',(parseInt($(this).css('opacity'))*10));
+					};
+				});
 			});
+		}
+	},
+	pie:function(){
+		var device = $_device();
+		if ((device.browser == 'MSIE' && device.bv == '6') || (device.browser == 'MSIE' && device.bv == '7') || (device.browser == 'MSIE' && device.bv == '8')){
+			/*include rrt-lib/ieOp.css*/
+			$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/pie.css" />');
 		}
 	}
 };
