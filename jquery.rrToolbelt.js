@@ -96,9 +96,11 @@ var $_rootDir = 'js/';
 					/*include rrt-lib/ieOp.css*/
 					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/ieOp.css" />').promise().done(function(){
 						$('*').each(function(){
-							if ($(this).css('opacity') != 'auto'){
-								$(this).attr('data-ieopacity',(parseInt($(this).css('opacity'))*10));
-							};
+						   $(this).css($(this).getStyleObject()); 
+						}).promise().done(function(){
+						    $('*:not([style*="opacity: 1"])').each(function(){
+									$(this).attr('data-ieopacity',(parseFloat($(this).css('opacity'))*100));
+						    });
 						});
 					});
 				}
@@ -186,18 +188,4 @@ var $_rootDir = 'js/';
 		    }
 		})(jQuery);
 
-/* JQUERY SELECTOR EXTENSIONS */
-	/*div:styleEquals('') selector*/
-		jQuery.extend(jQuery.expr[':'], {
-	    styleEquals: function(a, i, m){
-	        var styles = $(a).attr("style").split(" ")
-	        var found = false;
-	        for (var i = 0; i < styles.length; i++) {
-	                if (styles[i]===m[3]) {
-	                        found = true;
-	                        break;
-	                }
-	        }
-	        return found;
-	    }
-		});
+
