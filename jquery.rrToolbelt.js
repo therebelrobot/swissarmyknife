@@ -17,20 +17,23 @@ Available functions:
 	$_(log, user, type) - conditional console.log/error when url has ?debug=user or ?debug=all or ?debug=true
 
 	$_MSIE - runs MSIE specific fixes for various issues (bgSize, opacity, border-radius, etc.
+				.isUsed() - returns true if using MSIE 6, 7, or 8
+
+				.bg() - runs background-size fix on all elements needing it
+				.opacity() - runs opacity fix on all elements needing it
+				.pie() - appends the pie behavior css property to any element needing it
+				.console() - runs fix to create console object if none present
+				.fixAll() - runs all the above fixes
 
 	$_device() - inspects userAgent, returns object profile of device in use.
-				userAgent list originally from http://techpatterns.com/forums/about304.html - 04/21/2013 updated
-					modified by Trent Oswald, 04/23/2013
 				Profile returned:
 					type : phone, tablet, desktop, other
-					name : shortened common name, where applicable
-									iPad, iPadMini, MacOSX, Win, Linux, Android, Nexus, GalaxyTab2-7
-					OS : Operating System of device, Mac, Win, Linux, Android, Chrome
+					OS : Operating System of device, Mac, Win, Linux, Android, iPad, iPadMini, iPod, iPhone, etc.
 					OSv : OS version
+					standalone : If the browser is standalone (iPad only)
 					browser : common name for browser in use: MSIE, firefox, chrome, safari, opera, etc.
 					bv : browser version
 					view : object (width, height) with the pixel dimension of the viewport
-					standalone : If the browser is standalone (iPad only)
 
  jQuery Functions:
 	$(selector).getStyleObject() - returns all styles of an element in an object
@@ -117,9 +120,16 @@ var $_rootDir = 'js/';
 				$_MSIE.opacity();
 				$_MSIE.pie();
 			},
+			isUsed:function(){
+				var thisUser = window.navigator.userAgent;
+	      if (thisUser.indexOf('MSIE 8') >-1 || thisUser.indexOf('MSIE 7') > -1 || thisUser.indexOf('MSIE 6') > -1){
+	        return true;
+	      }
+	      return false;
+			},
 			bg:function(){
 				var device = $_device();
-				if ((device.browser == 'MSIE' && device.bv == '6') || (device.browser == 'MSIE' && device.bv == '7') || (device.browser == 'MSIE' && device.bv == '8')){
+				if ($_MSIE.isUsed()){
 					/*include rrt-lib/jquery.backgroundSize.js*/
 					$('head').append('<script type="text/javascript" src="'+$_rootDir+'"rrt-lib/jquery.backgroundSize.js"></script>').promise().done(function(){
 						$('*').each(function(){
@@ -144,7 +154,7 @@ var $_rootDir = 'js/';
 			},
 			opacity:function(){
 				var device = $_device();
-				if ((device.browser == 'MSIE' && device.bv == '6') || (device.browser == 'MSIE' && device.bv == '7') || (device.browser == 'MSIE' && device.bv == '8')){
+				if ($_MSIE.isUsed()){
 					/*include rrt-lib/ieOp.css*/
 					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/ieOp.css" />').promise().done(function(){
 						$('*').each(function(){
@@ -159,7 +169,7 @@ var $_rootDir = 'js/';
 			},
 			pie:function(){
 				var device = $_device();
-				if ((device.browser == 'MSIE' && device.bv == '6') || (device.browser == 'MSIE' && device.bv == '7') || (device.browser == 'MSIE' && device.bv == '8')){
+				if ($_MSIE.isUsed()){
 					/*include rrt-lib/ieOp.css*/
 					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/pie.css" />');
 				}
@@ -204,12 +214,27 @@ var $_rootDir = 'js/';
 					profile.view.height = h;
 					profile.view.width = w;
 
-				/*set type*/
+				/*return OS*/
+		      if (ua.indexOf("iPad")>-1){
+		        profile.type = 'tablet';
+		        profile.OS = 'iPad';
+		        if (window.devicePixelRatio >= 2) {
+		          profile.OS = 'iPadMini';
+		        }
+		      }
+		     
+		      if (ua.indexOf("Android")>-1){
+		        profile.type = 'tablet';
+		        profile.OS = 'Android';
+		      }      /*
+		       WXGA (1280×800)
+		       WQXGA (2560×1600)
+		       */
+		    /*return browser and version*/
 
-				/*set OS and OSv - along with standalone, if iPad*/
-
-				/*set browser and bv*/
-
+			    if (ua.indexOf("MSIE 9")>-1){
+			      return true;
+			    }
 
 				/*** return the final results ***/
 				return profile;
