@@ -26,7 +26,6 @@ Available functions:
 				.fixAll() - runs all the above fixes
 
 
-
  jQuery Functions:
 	$(selector).getStyleObject() - returns all styles of an element in an object
 					from http://upshots.org/?p=112 & Dakota Schneider (http://hackthetruth.org)
