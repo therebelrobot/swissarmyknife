@@ -25,19 +25,22 @@ Available functions:
 				.console() - runs fix to create console object if none present
 				.fixAll() - runs all the above fixes
 
-	$_device() - inspects userAgent, returns object profile of device in use.
-				Profile returned:
-					type : phone, tablet, desktop, other
-					OS : Operating System of device, Mac, Win, Linux, Android, iPad, iPadMini, iPod, iPhone, etc.
-					OSv : OS version
-					standalone : If the browser is standalone (iPad only)
-					browser : common name for browser in use: MSIE, firefox, chrome, safari, opera, etc.
-					bv : browser version
-					view : object (width, height) with the pixel dimension of the viewport
+
 
  jQuery Functions:
 	$(selector).getStyleObject() - returns all styles of an element in an object
-					from http://upshots.org/?p=112 and Dakota Schneider (http://hackthetruth.org)
+					from http://upshots.org/?p=112 & Dakota Schneider (http://hackthetruth.org)
+	$.browser - Browser detection
+		https://github.com/gabceb/jquery-browser-plugin
+			$.browser.msie - bool
+			$.browser.webkit - bool
+			$.browser.mozilla - bool
+
+			$.browser.ipad - bool
+			$.browser.iphone - bool
+			$.browser.android - bool
+			
+			$.browser.version - string
 
 ****************************** */
 
@@ -128,12 +131,13 @@ var $_rootDir = 'js/';
 	      return false;
 			},
 			bg:function(){
-				var device = $_device();
 				if ($_MSIE.isUsed()){
 					/*include rrt-lib/jquery.backgroundSize.js*/
-					$('head').append('<script type="text/javascript" src="'+$_rootDir+'"rrt-lib/jquery.backgroundSize.js"></script>').promise().done(function(){
+					$('body').append('<script type="text/javascript" src="'+$_rootDir+'"rrt-lib/jquery.backgroundSize.js"></script>').promise().done(function(){
 						$('*').each(function(){
-							if ($(this).css('background-image') != 'none' && $(this).css('background-size') != 'auto'){
+						   $(this).css($(this).getStyleObject()); 
+						}).promise().done(function(){
+						  $('*:not([style*="background-image: none"])').filter(':not([style*="background-size: auto"])').each(function(){
 								if ($(this).css('background-size') == 'cover' || $(this).css('background-size') == 'contain'){
 									var b = $(this).css('background-size');
 									$(this).css({backgroundSize:b});
@@ -147,13 +151,12 @@ var $_rootDir = 'js/';
 									var thisW = $(this).width();
 									$(this).find('div:first > img').css({'height':thisH, 'width':thisW});
 								}
-							};
+						  });
 						});
 					});
 				}
 			},
 			opacity:function(){
-				var device = $_device();
 				if ($_MSIE.isUsed()){
 					/*include rrt-lib/ieOp.css*/
 					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/ieOp.css" />').promise().done(function(){
@@ -168,7 +171,6 @@ var $_rootDir = 'js/';
 				}
 			},
 			pie:function(){
-				var device = $_device();
 				if ($_MSIE.isUsed()){
 					/*include rrt-lib/ieOp.css*/
 					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/pie.css" />');
@@ -186,58 +188,6 @@ var $_rootDir = 'js/';
 					};
 				};
 			}
-		};
-
-	/*device functions*/
-		function $_device(){
-				var profile = {
-					type: false, // phone, tablet, desktop
-					OS: false, // windows, mac, android, linux, iPad, iPod, iPhone
-					OSv: false, // return version of above OS
-					standalone:false, // true if iPad standalone browser
-					browser: false, // MSIE, firefox, chrome, safari, opera, other
-					bv: false, // return version of above OS
-					view:{ // viewport dimensions
-						width:false,
-						height:false
-					}
-				};
-				/*Retrieve userAgent*/
-					var ua = window.navigator.userAgent;
-					if (ua == ''){
-						return false;
-					}
-
-				/*return viewport dimensions*/
-					var h = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
-					var w = Math.max( body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth );
-					profile.view.height = h;
-					profile.view.width = w;
-
-				/*return OS*/
-		      if (ua.indexOf("iPad")>-1){
-		        profile.type = 'tablet';
-		        profile.OS = 'iPad';
-		        if (window.devicePixelRatio >= 2) {
-		          profile.OS = 'iPadMini';
-		        }
-		      }
-		     
-		      if (ua.indexOf("Android")>-1){
-		        profile.type = 'tablet';
-		        profile.OS = 'Android';
-		      }      /*
-		       WXGA (1280×800)
-		       WQXGA (2560×1600)
-		       */
-		    /*return browser and version*/
-
-			    if (ua.indexOf("MSIE 9")>-1){
-			      return true;
-			    }
-
-				/*** return the final results ***/
-				return profile;
 		};
 
 /* JQUERY FUNCTIONS */
@@ -276,5 +226,65 @@ var $_rootDir = 'js/';
 		        return this.css();
 		    }
 		})(jQuery);
+	/* jquery.browser plugin 
+	 *		https://github.com/gabceb/jquery-browser-plugin
+	 *		$.browser.msie - bool
+	 *		$.browser.webkit - bool
+	 *		$.browser.mozilla - bool
+	 *
+	 *		$.browser.ipad - bool
+	 *		$.browser.iphone - bool
+	 *		$.browser.android - bool
+	 *		
+	 *		$.browser.version - string
+	 */
+		(function( jQuery, window, undefined ) {
+			"use strict";
+			 
+			var matched, browser;
+			 
+			jQuery.uaMatch = function( ua ) {
+			  ua = ua.toLowerCase();
+			 
+				var match = /(chrome)[ \/]([\w.]+)/.exec( ua ) ||
+					/(webkit)[ \/]([\w.]+)/.exec( ua ) ||
+					/(opera)(?:.*version|)[ \/]([\w.]+)/.exec( ua ) ||
+					/(msie) ([\w.]+)/.exec( ua ) ||
+					ua.indexOf("compatible") < 0 && /(mozilla)(?:.*? rv:([\w.]+)|)/.exec( ua ) ||
+					[];
+
+				var platform_match = /(ipad)/.exec( ua ) ||
+					/(iphone)/.exec( ua ) ||
+					/(android)/.exec( ua ) ||
+					[];
+			 
+				return {
+					browser: match[ 1 ] || "",
+					version: match[ 2 ] || "0",
+					platform: platform_match[0] || ""
+				};
+			};
+			 
+			matched = jQuery.uaMatch( window.navigator.userAgent );
+			browser = {};
+			 
+			if ( matched.browser ) {
+				browser[ matched.browser ] = true;
+				browser.version = matched.version;
+			}
+
+			if ( matched.platform) {
+				browser[ matched.platform ] = true
+			}
+			 
+			// Chrome is Webkit, but Webkit is also Safari.
+			if ( browser.chrome ) {
+				browser.webkit = true;
+			} else if ( browser.webkit ) {
+				browser.safari = true;
+			}
+			 
+			jQuery.browser = browser;
+		})( jQuery, window );
 
 
