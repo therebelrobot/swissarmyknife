@@ -12,7 +12,7 @@ Dependencies:
 Available functions:
 
  Global Functions:
-	$_GET(p) - retrieves GET information from the URL, where p is the desired parameter
+	$_GET(p) - retrieves GET information from the URL, where p is the desired parameter (same as PHP: $_GET[p])
 
 	$_(log, user, type) - conditional console.log/error when url has ?debug=user or ?debug=all or ?debug=true
 
@@ -37,16 +37,15 @@ Available functions:
 
  jQuery Functions:
 	$(selector).getStyleObject() - returns all styles of an element in an object
-
- jQuery Selector Extensions:
-	div:styleEquals('') selector - returns only elements with specific style inline
+					from http://upshots.org/?p=112 and Dakota Schneider (http://hackthetruth.org)
 
 ****************************** */
 
 var $_rootDir = 'js/';
 
 /* GLOBAL FUNCTIONS */
-	/*GET parameters*/
+
+	/*GET URL parameters*/
 		function $_GET(p) {
 			var url = window.location.search.substring(1);
 			var queryParams = url.split('&');
@@ -65,7 +64,7 @@ var $_rootDir = 'js/';
 			return false;
 		};
 
-	/*Console Log*/
+	/*Conditional Console Log*/
 		function $_(log, user, type){
   		var which = $_GET('debug');
   		if (which){
@@ -112,6 +111,7 @@ var $_rootDir = 'js/';
 				}
   		};
 		};
+
 	/*IE8 Fixes*/
 		var $_MSIE = {
 			fixAll:function(){
@@ -241,13 +241,13 @@ var $_rootDir = 'js/';
 		};
 
 /* JQUERY FUNCTIONS */
-	/* getStyleObject Plugin for jQuery JavaScript Library
-	 * From: http://upshots.org/?p=112
-	 *
+
+	/* getStyleObject Plugin for jQuery
+	 * 
 	 * Copyright: Unknown, see source link
+	 * From: http://upshots.org/?p=112
 	 * Plugin version by Dakota Schneider (http://hackthetruth.org)
 	 */
-
 		(function($){
 		    $.fn.getStyleObject = function(){
 		        var dom = this.get(0);
