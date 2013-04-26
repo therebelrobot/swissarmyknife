@@ -193,6 +193,13 @@ var $_rootDir = 'js/';
 			}
 		};
 
+	/*isArray compatability*/
+		if(!Array.isArray) {
+		  Array.isArray = function (vArg) {
+		    return Object.prototype.toString.call(vArg) === "[object Array]";
+		  };
+		}
+
 /* JQUERY FUNCTIONS */
 
 	/* getStyleObject Plugin for jQuery
@@ -301,6 +308,28 @@ var $_rootDir = 'js/';
 		  	else{
 		  		return this.each(function() {
 		      	$(this).attr('data-'+one);
+		    	});
+		  	}
+		    
+		  };
+		}(jQuery));
+
+	/*class function plugin*/
+		(function($) {
+		  $.fn.class = function(obj) {
+		  	if (obj){
+		  		if (Array.isArray(obj)){
+		  			obj = obj.join();
+		  		}
+		  		return this.each(function() {
+		      	$(this).attr('class',obj);
+		    	});
+		  	}
+		  	else{
+		  		return this.each(function() {
+		  			var classes = $(this).attr('class');
+		  			classes = classes.split(' ');
+		  			return classes;
 		    	});
 		  	}
 		    
