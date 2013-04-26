@@ -286,4 +286,21 @@ var $_rootDir = 'js/';
 			jQuery.browser = browser;
 		})( jQuery, window );
 
+	/*html5 data attribute plugin*/
+		(function($) {
+		  $.fn.hdata = function(one, two) {
+		  	if (two){
+		  		return this.each(function() {
+		      	$(this).attr('data-'+one,two);
+		    	});
+		  	}
+		  	else{
+		  		return this.each(function() {
+		      	$(this).attr('data-'+one);
+		    	});
+		  	}
+		    
+		  };
+		}(jQuery));
+
 
