@@ -45,6 +45,10 @@ Available functions:
 		shortcut to pull/assign data to the 'data-'+attr attribute from the selector element. 
 
 		$(selector).data() assigns it to a backend data, rather than to the html5 data attribute.
+
+	$(selector).hasAttr(attr) - return true if element has the attr specified
+
+	
 ****************************** */
 
 var $_rootDir = 'js/';
@@ -335,5 +339,19 @@ var $_rootDir = 'js/';
 		    
 		  };
 		}(jQuery));
+
+	/*hasAttr function plugin*/
+		(function($) {
+		  $.fn.hasAttr = function(attr) {
+		  		return this.each(function() {
+		  			var att = $(this).attr(attr);
+		  			if (typeof att != 'undefined'){
+		  				return true;
+		  			}
+		  			return false;
+		    	});
+		  };
+		}(jQuery));
+
 
 
