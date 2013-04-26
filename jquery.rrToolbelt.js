@@ -40,7 +40,11 @@ Available functions:
 			$.browser.android - bool
 			
 			$.browser.version - string
+	
+	$(selector).hdata(attr[, value]) - data-attribute assign/return
+		shortcut to pull/assign data to the 'data-'+attr attribute from the selector element. 
 
+		$(selector).data() assigns it to a backend data, rather than to the html5 data attribute.
 ****************************** */
 
 var $_rootDir = 'js/';
