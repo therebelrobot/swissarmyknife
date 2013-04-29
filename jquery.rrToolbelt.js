@@ -25,6 +25,15 @@ Available functions:
 				.console() - runs fix to create console object if none present
 				.fixAll() - runs all the above fixes
 
+	$_ls and $_ss - localStorage and sessionStorage functions
+
+	$_win.size(), $_win.h([%]), $_win.w([%]) - returns window viewport dimensions, optional percentages in h and w
+	
+	$_resp(func) - run on initial, and any time the window reloads
+
+	$_toUni(str) - converts string to unicode
+
+	isArray() compatability: makes isArray() a valid function, even in old browsers.
 
  jQuery Functions:
 	$(selector).getStyleObject() - returns all styles of an element in an object
@@ -46,12 +55,14 @@ Available functions:
 
 		$(selector).data() assigns it to a backend data, rather than to the html5 data attribute.
 
+	$(selector).class([obj]): returns an array of classes of an object, or assigns them if passed an array.
+
 	$(selector).hasAttr(attr) - return true if element has the attr specified
 
 	
 ****************************** */
 
-var $_rootDir = 'js/';
+var $_jsDir = 'js/';
 
 /* GLOBAL FUNCTIONS */
 
@@ -140,7 +151,7 @@ var $_rootDir = 'js/';
 			bg:function(){
 				if ($_MSIE.isUsed()){
 					/*include rrt-lib/jquery.backgroundSize.js*/
-					$('body').append('<script type="text/javascript" src="'+$_rootDir+'"rrt-lib/jquery.backgroundSize.js"></script>').promise().done(function(){
+					$('body').append('<script type="text/javascript" src="'+$_jsDir+'"rrt-lib/jquery.backgroundSize.js"></script>').promise().done(function(){
 						$('*').each(function(){
 						   $(this).css($(this).getStyleObject()); 
 						}).promise().done(function(){
@@ -166,7 +177,7 @@ var $_rootDir = 'js/';
 			opacity:function(){
 				if ($_MSIE.isUsed()){
 					/*include rrt-lib/ieOp.css*/
-					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/ieOp.css" />').promise().done(function(){
+					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_jsDir+'"rrt-lib/ieOp.css" />').promise().done(function(){
 						$('*').each(function(){
 						   $(this).css($(this).getStyleObject()); 
 						}).promise().done(function(){
@@ -180,7 +191,7 @@ var $_rootDir = 'js/';
 			pie:function(){
 				if ($_MSIE.isUsed()){
 					/*include rrt-lib/ieOp.css*/
-					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_rootDir+'"rrt-lib/pie.css" />');
+					$('head').append('<link rel="stylesheet" type="text/css" href="'+$_jsDir+'"rrt-lib/pie.css" />');
 				}
 			},
 			console:function(){
@@ -196,6 +207,217 @@ var $_rootDir = 'js/';
 				};
 			}
 		};
+
+	/*LocalStorage functions*/
+		$_ls = {
+      comp: function(){
+        if (!window.localStorage) {
+          window.localStorage = {
+            getItem: function (sKey) {
+              if (!sKey || !this.hasOwnProperty(sKey)) { return null; }
+              return unescape(document.cookie.replace(new RegExp("(?:^|.*;\\s*)" + escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=\\s*((?:[^;](?!;))*[^;]?).*"), "$1"));
+            },
+            key: function (nKeyId) {
+              return unescape(document.cookie.replace(/\s*\=(?:.(?!;))*$/, "").split(/\s*\=(?:[^;](?!;))*[^;]?;\s*/)[nKeyId]);
+            },
+            setItem: function (sKey, sValue) {
+              if(!sKey) { return; }
+              document.cookie = escape(sKey) + "=" + escape(sValue) + "; expires=Tue, 19 Jan 2038 03:14:07 GMT; path=/";
+              this.length = document.cookie.match(/\=/g).length;
+            },
+            length: 0,
+            removeItem: function (sKey) {
+              if (!sKey || !this.hasOwnProperty(sKey)) { return; }
+              document.cookie = escape(sKey) + "=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/";
+              this.length--;
+            },
+            hasOwnProperty: function (sKey) {
+              return (new RegExp("(?:^|;\\s*)" + escape(sKey).replace(/[\-\.\+\*]/g, "\\$&") + "\\s*\\=")).test(document.cookie);
+            }
+          };
+          window.localStorage.length = (document.cookie.match(/\=/g) || window.localStorage).length;
+        }
+      },
+      getAll: function(){
+        var allKeys = Object.keys(localStorage);
+        return allKeys;
+      },
+      exists:function(key){
+        var allKeys =$_ls.getAll();
+        if (allKeys.indexOf(key) > -1){
+          return true;
+        }
+        else{
+          return false;
+        }
+      },
+      retrieve: function(key){
+        if($_ls.exists(key)){
+          var results = localStorage.getItem(key);
+
+          $_('SUCCESS: ',key,' retrieved from localStorage','ls');
+          
+          return results;
+        }
+        else{
+
+          $_('FAILED: ',key,' does not exist in localStorage','ls');
+          
+          return false;
+        }
+      },
+      write: function(key, str){
+        if (!$_ls.exists(key)){
+          localStorage.setItem(key,str);
+
+          $_('SUCCESS: stored ',key,' in localStorage','ls');
+          
+        }
+        else{
+
+          $_('FAILED: ',key,' already exists. Please remove before continuing','ls');
+          
+          return false;
+        }
+      },
+      remove: function(key){
+        if($_ls.exists(key)){
+          localStorage.removeItem(key);
+          
+          $_('SUCCESS: ',key,' removed from localStorage','ls');
+          
+          return true;
+        }
+        else{
+          
+          $_('FAILED: ',key,' does not exist in localStorage','ls');
+          
+          return false;
+        }
+      }
+    }
+
+	/*SessionStorage functions*/
+		$_ss = {
+      getAll: function(){
+        var allKeys = Object.keys(sessionStorage);
+        return allKeys;
+      },
+      exists:function(key){
+        var allKeys =$_ss.getAll();
+        if (allKeys.indexOf(key) > -1){
+          return true;
+        }
+        else{
+          return false;
+        }
+      },
+      retrieve: function(key){
+        if($_ss.exists(key)){
+          var results = sessionStorage.getItem(key);
+
+          $_('SUCCESS: ',key,' retrieved from sessionStorage','ss');
+          
+          return results;
+        }
+        else{
+
+          $_('FAILED: ',key,' does not exist in sessionStorage','ss');
+          
+          return false;
+        }
+      },
+      write: function(key, str){
+        if (!$_ss.exists(key)){
+          sessionStorage.setItem(key,str);
+
+          $_('SUCCESS: stored ',key,' in sessionStorage','ss');
+          
+        }
+        else{
+
+          $_('FAILED: ',key,' already exists. Please remove before continuing','ss');
+          
+          return false;
+        }
+      },
+      remove: function(key){
+        if($_ss.exists(key)){
+          sessionStorage.removeItem(key);
+          
+          $_('SUCCESS: ',key,' removed from sessionStorage','ss');
+          
+          return true;
+        }
+        else{
+          
+          $_('FAILED: ',key,' does not exist in sessionStorage','ss');
+          
+          return false;
+        }
+      }
+    }
+
+  /*Window size functions*/
+  	var $_win = {
+  		size:function(){
+  			var dim = {
+  				h:$_win.h(),
+  				w:$_win.w()
+  			}
+  			return dim;
+  		},
+	  	h: function(perc){
+	      var body = document.body,
+	      html = document.documentElement;
+	      
+	      var ph = Math.max( body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight );
+	    
+	      if (!perc){
+	        return ph;
+	      }
+	      else{
+	        var h = ph;
+	        h = (h/100)*perc;
+	        return h;
+	      }
+	    },
+	    w: function(perc){
+	      var body = document.body,
+	      html = document.documentElement;
+	      
+	      var pw = Math.max( body.scrollWidth, body.offsetWidth, html.clientWidth, html.scrollWidth, html.offsetWidth );
+	      if (!perc){
+	        return pw;
+	      }
+	      else{
+	        var w = pw;
+	        w = (w/100)*perc;
+	        return w;
+	      }
+	    }
+  	};
+  	
+  /*Responsive function*/
+  	var $_resp = function(func){
+  		func();
+  		$(window).resize(function(){
+  			func();
+  		});
+  	}
+	/*toUni string conversion*/
+		function $_toUni(theString) {
+		  var unicodeString = '';
+		  for (var i=0; i < theString.length; i++) {
+		    var theUnicode = theString.charCodeAt(i).toString(16).toUpperCase();
+		    while (theUnicode.length < 4) {
+		      theUnicode = '0' + theUnicode;
+		    }
+		    theUnicode = '\\u' + theUnicode;
+		    unicodeString += theUnicode;
+		  }
+		  return unicodeString;
+		}
 
 	/*isArray compatability*/
 		if(!Array.isArray) {
