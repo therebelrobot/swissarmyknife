@@ -1,3 +1,9 @@
+# Swiss Army Knife
+
+Work in Progress. I'm converting this old lib of mine from jQuery to native/browserify standards.
+
+The original readme is as follows:
+
 jquery.rrToolbelt.js
 =================
 
