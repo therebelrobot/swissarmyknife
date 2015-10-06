@@ -1,0 +1,24 @@
+{
+  "name": "swissarmyknife",
+  "version": "0.0.1",
+  "description": "Work in progress",
+  "main": "src/swissarmyknife.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/therebelrobot/swissarmyknife.git"
+  },
+  "author": "Trent Oswald <trentoswald@therebelrobot.com> (@therebelrobot)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/therebelrobot/swissarmyknife/issues"
+  },
+  "homepage": "https://github.com/therebelrobot/swissarmyknife#readme",
+  "devDependencies": {
+    "browserify": "^11.2.0",
+    "istanbul": "^0.3.22",
+    "mocha": "^2.3.3"
+  }
+}
